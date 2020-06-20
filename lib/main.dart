@@ -4,6 +4,7 @@ import 'dart:io' show Platform;
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:scanner/SplashScreen.dart';
 import 'package:scanner/scan_screen.dart';
 
 void main() {
@@ -21,6 +22,6 @@ class _MyAppState extends State<_MyApp> {
     return MaterialApp(
         title: "QR Scanner",
         debugShowCheckedModeBanner: false,
-        home: ScanScreen());
+        home: SplashScreen());
   }
 }

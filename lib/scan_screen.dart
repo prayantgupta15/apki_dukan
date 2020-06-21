@@ -59,15 +59,28 @@ class _ScanScreenState extends State<ScanScreen> {
               showDialog(
                   context: context,
                   child: AlertDialog(
-                    title: Text(
-                      "Add Shop",
-                      style: TextStyle(color: Colors.deepOrange),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    title: Row(
+                      children: <Widget>[
+                        CircleAvatar(
+                          radius: 30,
+                          child: Image(
+                            image: AssetImage('assets/watermar.png'),
+                          ),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        Text(
+                          "Add Shop",
+                          style: TextStyle(color: Colors.deepOrange),
+                        ),
+                      ],
                     ),
                     content: Form(
                       key: _formKey,
                       child: ListView(
                         shrinkWrap: true,
-//                        mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Text(
                             "No need to Scan QR again",
@@ -75,29 +88,33 @@ class _ScanScreenState extends State<ScanScreen> {
                           ),
                           SizedBox(height: 20),
                           TextFormField(
+                            textCapitalization: TextCapitalization.sentences,
+                            enableSuggestions: true,
                             controller: nameController,
                             cursorColor: Colors.deepOrange,
                             decoration: InputDecoration(
-                              labelText: "Shop Name",
+                              labelText: "Enter Shop Name",
                               enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(20),
                                   borderSide: new BorderSide(
-                                    color: Colors.deepOrange,
-                                  )),
+                                      color: Colors.deepOrange, width: 2)),
                               focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(20),
                                   borderSide: new BorderSide(
-                                    color: Colors.deepOrange,
-                                  )),
+                                      color: Colors.deepOrange, width: 2)),
                               labelStyle: TextStyle(
                                   color: Colors.deepOrange,
-                                  fontWeight: FontWeight.bold),
-                              hintText: "Twenty7",
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500),
+                              hintText: "Ex.Twenty7",
+                              helperStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(20),
                                   borderSide: new BorderSide(
-                                    color: Colors.deepOrange,
-                                  )),
+                                      color: Colors.deepOrange, width: 2)),
                             ),
                             validator: (String str) {
                               if (str.isEmpty) return "Enter Name";
@@ -107,12 +124,15 @@ class _ScanScreenState extends State<ScanScreen> {
                       ),
                     ),
                     actions: <Widget>[
-                      FlatButton(
+                      RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        color: Colors.deepOrange,
+                        elevation: 8,
                         child: Text(
                           "Save",
                           style: TextStyle(
-                              color: Colors.deepOrange,
-                              fontWeight: FontWeight.bold),
+                              color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
@@ -122,10 +142,14 @@ class _ScanScreenState extends State<ScanScreen> {
                           }
                         },
                       ),
-                      FlatButton(
+                      RaisedButton(
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        color: Colors.deepOrange,
                         child: Text("Cancel",
                             style: TextStyle(
-                                color: Colors.deepOrange,
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold)),
                         onPressed: () {
                           Navigator.pop(context);
@@ -200,34 +224,81 @@ class _ScanScreenState extends State<ScanScreen> {
                 image: AssetImage('assets/watermar.png'),
               ),
             )),
-            ListView(
-              shrinkWrap: true,
-              children: <Widget>[
-                SizedBox(
-                  height: 80,
-                ),
-                Center(
-                  child: Container(
-//                  width: MediaQuery.of(context).size.width * 0.8,
-                    height: 50,
-                    decoration: BoxDecoration(
-                        color: Color(0xf707070),
-                        borderRadius: BorderRadius.circular(30)),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-//                    mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            _buttonSelected = 0;
-                            setState(() {});
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.4,
-                            height: 50,
-                            decoration: BoxDecoration(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  SizedBox(
+                    height: 80,
+                  ),
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          color: Color(0xf707070),
+                          borderRadius: BorderRadius.circular(30)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              _buttonSelected = 0;
+                              setState(() {});
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.45,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  gradient: _buttonSelected == 0
+                                      ? LinearGradient(
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                          colors: [
+                                              Colors.redAccent,
+                                              Colors.orange
+                                            ])
+                                      : null,
+                                  boxShadow: _buttonSelected == 0
+                                      ? <BoxShadow>[
+                                          BoxShadow(
+                                              offset: Offset(0, 0),
+                                              color: Colors.deepOrange,
+                                              spreadRadius: 2,
+                                              blurRadius: 8)
+                                        ]
+                                      : null),
+                              child: Center(
+                                  child: Text(
+                                "Local",
+                                style: _buttonSelected == 0
+                                    ? selectedStyle
+                                    : unselectedStyle,
+                              )),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              _buttonSelected = 1;
+                              setState(() {});
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.45,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                boxShadow: _buttonSelected == 1
+                                    ? <BoxShadow>[
+                                        BoxShadow(
+                                            offset: Offset(-1, 1),
+                                            color: Colors.deepOrange,
+                                            spreadRadius: 2,
+                                            blurRadius: 8)
+                                      ]
+                                    : null,
                                 borderRadius: BorderRadius.circular(30),
-                                gradient: _buttonSelected == 0
+                                gradient: _buttonSelected == 1
                                     ? LinearGradient(
                                         begin: Alignment.centerLeft,
                                         end: Alignment.centerRight,
@@ -236,64 +307,24 @@ class _ScanScreenState extends State<ScanScreen> {
                                             Colors.orange
                                           ])
                                     : null,
-                                boxShadow: _buttonSelected == 0
-                                    ? <BoxShadow>[
-                                        BoxShadow(
-                                            offset: Offset(0, 0),
-                                            color: Colors.deepOrange,
-                                            spreadRadius: 2,
-                                            blurRadius: 8)
-                                      ]
-                                    : null),
-                            child: Center(
-                                child: Text(
-                              "Local",
-                              style: _buttonSelected == 0
-                                  ? selectedStyle
-                                  : unselectedStyle,
-                            )),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            _buttonSelected = 1;
-                            setState(() {});
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.4,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              boxShadow: _buttonSelected == 1
-                                  ? <BoxShadow>[
-                                      BoxShadow(
-                                          offset: Offset(-1, 1),
-                                          color: Colors.deepOrange,
-                                          spreadRadius: 2,
-                                          blurRadius: 8)
-                                    ]
-                                  : null,
-                              borderRadius: BorderRadius.circular(30),
-                              gradient: _buttonSelected == 1
-                                  ? LinearGradient(
-                                      begin: Alignment.centerLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [Colors.redAccent, Colors.orange])
-                                  : null,
+                              ),
+                              child: Center(
+                                  child: Text("Global",
+                                      style: _buttonSelected == 1
+                                          ? selectedStyle
+                                          : unselectedStyle)),
                             ),
-                            child: Center(
-                                child: Text("Global",
-                                    style: _buttonSelected == 1
-                                        ? selectedStyle
-                                        : unselectedStyle)),
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: FutureBuilder(
+                  SizedBox(height: 20),
+                  Text("Saved Shops:",
+                      style: TextStyle(
+                          color: Colors.deepOrange,
+                          fontWeight: FontWeight.bold)),
+                  FutureBuilder(
                     future: getStores(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
@@ -360,9 +391,9 @@ class _ScanScreenState extends State<ScanScreen> {
                         );
                       }
                     },
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ],
         ),
@@ -370,7 +401,110 @@ class _ScanScreenState extends State<ScanScreen> {
           backgroundColor: Colors.deepOrange,
           onPressed: () {
             HapticFeedback.vibrate();
-
+//
+//            GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+//            TextEditingController nameController = TextEditingController();
+//            showDialog(
+//                context: context,
+//                child: AlertDialog(
+//                  shape: RoundedRectangleBorder(
+//                    borderRadius: BorderRadius.circular(20),
+//                  ),
+//                  title: Row(
+//                    children: <Widget>[
+//                      CircleAvatar(
+//                        radius: 30,
+//                        child: Image(
+//                          image: AssetImage('assets/watermar.png'),
+//                        ),
+//                        backgroundColor: Colors.transparent,
+//                      ),
+//                      Text(
+//                        "Add Shop",
+//                        style: TextStyle(color: Colors.deepOrange),
+//                      ),
+//                    ],
+//                  ),
+//                  content: Form(
+//                    key: _formKey,
+//                    child: ListView(
+//                      shrinkWrap: true,
+//                      children: <Widget>[
+//                        Text(
+//                          "No need to Scan QR again",
+//                          style: TextStyle(color: Colors.grey),
+//                        ),
+//                        SizedBox(height: 20),
+//                        TextFormField(
+//                          textCapitalization: TextCapitalization.sentences,
+//                          enableSuggestions: true,
+//                          controller: nameController,
+//                          cursorColor: Colors.deepOrange,
+//                          decoration: InputDecoration(
+//                            labelText: "Enter Shop Name",
+//                            enabledBorder: OutlineInputBorder(
+//                                borderRadius: BorderRadius.circular(20),
+//                                borderSide: new BorderSide(
+//                                    color: Colors.deepOrange, width: 2)),
+//                            focusedBorder: OutlineInputBorder(
+//                                borderRadius: BorderRadius.circular(20),
+//                                borderSide: new BorderSide(
+//                                    color: Colors.deepOrange, width: 2)),
+//                            labelStyle: TextStyle(
+//                                color: Colors.deepOrange,
+//                                fontSize: 15,
+//                                fontWeight: FontWeight.w500),
+//                            hintText: "Ex.Twenty7",
+//                            helperStyle: TextStyle(
+//                              color: Colors.grey,
+//                              fontSize: 12,
+//                            ),
+//                            border: OutlineInputBorder(
+//                                borderRadius: BorderRadius.circular(20),
+//                                borderSide: new BorderSide(
+//                                    color: Colors.deepOrange, width: 2)),
+//                          ),
+//                          validator: (String str) {
+//                            if (str.isEmpty) return "Enter Name";
+//                          },
+//                        )
+//                      ],
+//                    ),
+//                  ),
+//                  actions: <Widget>[
+//                    RaisedButton(
+//                      shape: RoundedRectangleBorder(
+//                          borderRadius: BorderRadius.circular(20)),
+//                      color: Colors.deepOrange,
+//                      elevation: 8,
+//                      child: Text(
+//                        "Save",
+//                        style: TextStyle(
+//                            color: Colors.white, fontWeight: FontWeight.bold),
+//                      ),
+//                      onPressed: () {
+//                        if (_formKey.currentState.validate()) {
+//                          saveStoreDetails(nameController.text, "url");
+//                          Navigator.pop(context);
+//                          setState(() {});
+//                        }
+//                      },
+//                    ),
+//                    RaisedButton(
+//                      elevation: 8,
+//                      shape: RoundedRectangleBorder(
+//                          borderRadius: BorderRadius.circular(20)),
+//                      color: Colors.deepOrange,
+//                      child: Text("Cancel",
+//                          style: TextStyle(
+//                              color: Colors.white,
+//                              fontWeight: FontWeight.bold)),
+//                      onPressed: () {
+//                        Navigator.pop(context);
+//                      },
+//                    )
+//                  ],
+//                ));
             scan();
           },
           child: Icon(MdiIcons.qrcodeScan),

@@ -6,10 +6,12 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="QR Scanner"
+        android:label="Apki Dookan"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

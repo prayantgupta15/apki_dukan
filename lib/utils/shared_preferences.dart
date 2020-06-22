@@ -51,3 +51,11 @@ checkIfExist(String url) {
   }
   return false;
 }
+
+//check name saved on not previously
+checkName(String string) {
+  for (int i = 0; i < allStoresList.length; i++) {
+    if (allStoresList[i].storeName.toLowerCase() == string) return true;
+  }
+  return false;
+}

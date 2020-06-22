@@ -67,7 +67,7 @@ class _ScanScreenState extends State<ScanScreen> {
                         CircleAvatar(
                           radius: 30,
                           child: Image(
-                            image: AssetImage('assets/watermar.png'),
+                            image: AssetImage('assets/watermark.png'),
                           ),
                           backgroundColor: Colors.transparent,
                         ),
@@ -216,43 +216,62 @@ class _ScanScreenState extends State<ScanScreen> {
   }
 
   Widget savedShopsGrid(AsyncSnapshot snapshot) {
-    return GridView.count(
-      physics: ScrollPhysics(),
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      crossAxisCount: 2,
-      mainAxisSpacing: 10,
-      childAspectRatio: 3,
-      crossAxisSpacing: 10,
-      children: List.generate(snapshot.data.length, (index) {
-        return Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          elevation: 8,
-          child: GestureDetector(
-            onTap: () async {
-              String url = snapshot.data[index].storeUrl;
-              await launch(
-                url,
-                forceSafariVC: false,
-                forceWebView: true,
-                enableJavaScript: true,
-              );
-            },
-            child: Container(
-//                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [Colors.redAccent, Colors.orange]),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Center(child: Text(snapshot.data[index].storeName))),
-          ),
-          color: Colors.blue,
-        );
-      }),
+    return Scrollbar(
+      child: GridView.count(
+        physics: ScrollPhysics(),
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        crossAxisCount: 2,
+        mainAxisSpacing: 10,
+        childAspectRatio: 1,
+        crossAxisSpacing: 10,
+        children: List.generate(snapshot.data.length, (index) {
+          return Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            elevation: 8,
+            child: GestureDetector(
+              onTap: () async {
+                String url = snapshot.data[index].storeUrl;
+                await launch(url,
+                  forceSafariVC: false,
+                  forceWebView: true,
+                  enableJavaScript: true,
+                );
+              },
+              child: Container(
+//                padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/watermark.png'),
+//                          fit: BoxFit.contain
+                    ),
+                    gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [Colors.redAccent, Colors.orange]),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                          height: 30,
+                          width: MediaQuery.of(context).size.width * 1,
+                          decoration: BoxDecoration(
+                              color: Colors.black45,
+                              borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(20))),
+                          child: Text(
+                            snapshot.data[index].storeName,
+                            style: selectedStyle,
+                          )))),
+            ),
+            color: Colors.transparent,
+          );
+        }),
+      ),
     );
   }
 
@@ -355,11 +374,11 @@ class _ScanScreenState extends State<ScanScreen> {
 //              height: MediaQuery.of(context).size.height,
                 child: Center(
               child: Image(
-                image: AssetImage('assets/watermar.png'),
+                image: AssetImage('assets/watermark.png'),
               ),
             )),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: ListView(
 //                physics: ScrollPhysics(),
                 children: <Widget>[

@@ -123,8 +123,6 @@ class _ScanScreenState extends State<ScanScreen> {
                                 if (checkName(
                                     nameController.text.toLowerCase()))
                                   return "Already saved shop for this name";
-                                else
-                                  return "";
                               }
                             },
                           )
@@ -233,18 +231,17 @@ class _ScanScreenState extends State<ScanScreen> {
             child: GestureDetector(
               onTap: () async {
                 String url = snapshot.data[index].storeUrl;
-                await launch(url,
+                await launch(
+                  url,
                   forceSafariVC: false,
                   forceWebView: true,
                   enableJavaScript: true,
                 );
               },
               child: Container(
-//                padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage('assets/watermark.png'),
-//                          fit: BoxFit.contain
                     ),
                     gradient: LinearGradient(
                         begin: Alignment.centerLeft,
@@ -256,8 +253,10 @@ class _ScanScreenState extends State<ScanScreen> {
                       alignment: Alignment.bottomCenter,
                       child: Container(
                           padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                          height: 30,
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          constraints: BoxConstraints(
+                            minHeight: 30,
+                          ),
                           width: MediaQuery.of(context).size.width * 1,
                           decoration: BoxDecoration(
                               color: Colors.black45,
@@ -265,7 +264,10 @@ class _ScanScreenState extends State<ScanScreen> {
                                   bottom: Radius.circular(20))),
                           child: Text(
                             snapshot.data[index].storeName,
-                            style: selectedStyle,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
                           )))),
             ),
             color: Colors.transparent,

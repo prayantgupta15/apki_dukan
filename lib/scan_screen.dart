@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 import 'package:scanner/utils/shared_preferences.dart';
+import 'package:scanner/utils/styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -22,6 +23,154 @@ class _ScanScreenState extends State<ScanScreen> {
   static final _possibleFormats = BarcodeFormat.values.toList()
     ..removeWhere((e) => e == BarcodeFormat.unknown);
   List<BarcodeFormat> selectedFormats = [..._possibleFormats];
+
+  Widget toggleButtons() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10),
+      width: MediaQuery.of(context).size.width * 0.8,
+      constraints: BoxConstraints(
+        maxHeight: 50,
+      ),
+      decoration: BoxDecoration(
+          color: searchBarColor, borderRadius: BorderRadius.circular(30)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          GestureDetector(
+            onTap: () {
+              _buttonSelected = 0;
+              setState(() {});
+            },
+            child: Container(
+              height: 50,
+              width: MediaQuery.of(context).size.width * 0.4,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  gradient: _buttonSelected == 0
+                      ? LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [Colors.redAccent, Colors.orange])
+                      : null,
+                  boxShadow: _buttonSelected == 0
+                      ? <BoxShadow>[
+                    BoxShadow(
+                        offset: Offset(1, 2),
+                        color: Colors.deepOrange,
+                        spreadRadius: 2,
+                        blurRadius: 8)
+                  ]
+                      : null),
+              child: Center(
+                  child: Text(
+                    "Local",
+                    style: _buttonSelected == 0 ? selectedStyle : unselectedStyle,
+                  )),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              _buttonSelected = 1;
+              setState(() {});
+            },
+            child: Container(
+              height: 50,
+              width: MediaQuery.of(context).size.width * 0.42,
+              decoration: BoxDecoration(
+                boxShadow: _buttonSelected == 1
+                    ? <BoxShadow>[
+                  BoxShadow(
+                      offset: Offset(-1, 2),
+                      color: Colors.deepOrange,
+                      spreadRadius: 2,
+                      blurRadius: 8)
+                ]
+                    : null,
+                borderRadius: BorderRadius.circular(30),
+                gradient: _buttonSelected == 1
+                    ? LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [Colors.redAccent, Colors.orange])
+                    : null,
+              ),
+              child: Center(
+                  child: Text("Global",
+                      style: _buttonSelected == 1
+                          ? selectedStyle
+                          : unselectedStyle)),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget savedShopsGrid(AsyncSnapshot snapshot) {
+    return Scrollbar(
+      child: GridView.count(
+        physics: ScrollPhysics(),
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        crossAxisCount: 2,
+        mainAxisSpacing: 10,
+        childAspectRatio: 1,
+        crossAxisSpacing: 10,
+        children: List.generate(snapshot.data.length, (index) {
+          return Card(
+            shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            elevation: 8,
+            child: GestureDetector(
+              onTap: () async {
+                String url = snapshot.data[index].storeUrl;
+                await launch(
+                  url,
+                  forceSafariVC: false,
+                  forceWebView: true,
+                  enableJavaScript: true,
+                );
+              },
+              child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/watermark.png'),
+                    ),
+                    gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [Colors.redAccent, Colors.orange]),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                          padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          constraints: BoxConstraints(
+                            minHeight: 30,
+                          ),
+                          width: MediaQuery.of(context).size.width * 1,
+                          decoration: BoxDecoration(
+                              color: Colors.black45,
+                              borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(20))),
+                          child: Text(
+                            snapshot.data[index].storeName,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )))),
+            ),
+            color: Colors.transparent,
+          );
+        }),
+      ),
+    );
+  }
+
 
   Future scan() async {
     try {
@@ -213,152 +362,7 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
-  Widget savedShopsGrid(AsyncSnapshot snapshot) {
-    return Scrollbar(
-      child: GridView.count(
-        physics: ScrollPhysics(),
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        crossAxisCount: 2,
-        mainAxisSpacing: 10,
-        childAspectRatio: 1,
-        crossAxisSpacing: 10,
-        children: List.generate(snapshot.data.length, (index) {
-          return Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            elevation: 8,
-            child: GestureDetector(
-              onTap: () async {
-                String url = snapshot.data[index].storeUrl;
-                await launch(
-                  url,
-                  forceSafariVC: false,
-                  forceWebView: true,
-                  enableJavaScript: true,
-                );
-              },
-              child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/watermark.png'),
-                    ),
-                    gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [Colors.redAccent, Colors.orange]),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          constraints: BoxConstraints(
-                            minHeight: 30,
-                          ),
-                          width: MediaQuery.of(context).size.width * 1,
-                          decoration: BoxDecoration(
-                              color: Colors.black45,
-                              borderRadius: BorderRadius.vertical(
-                                  bottom: Radius.circular(20))),
-                          child: Text(
-                            snapshot.data[index].storeName,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          )))),
-            ),
-            color: Colors.transparent,
-          );
-        }),
-      ),
-    );
-  }
 
-  Widget toggleButtons() {
-    return Center(
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.9,
-        ),
-        height: 50,
-        decoration: BoxDecoration(
-            color: Color(0xf707070), borderRadius: BorderRadius.circular(30)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                _buttonSelected = 0;
-                setState(() {});
-              },
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.45,
-                height: 50,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    gradient: _buttonSelected == 0
-                        ? LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [Colors.redAccent, Colors.orange])
-                        : null,
-                    boxShadow: _buttonSelected == 0
-                        ? <BoxShadow>[
-                            BoxShadow(
-                                offset: Offset(1, 2),
-                                color: Colors.deepOrange,
-                                spreadRadius: 2,
-                                blurRadius: 8)
-                          ]
-                        : null),
-                child: Center(
-                    child: Text(
-                  "Local",
-                  style: _buttonSelected == 0 ? selectedStyle : unselectedStyle,
-                )),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                _buttonSelected = 1;
-                setState(() {});
-              },
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.45,
-                height: 50,
-                decoration: BoxDecoration(
-                  boxShadow: _buttonSelected == 1
-                      ? <BoxShadow>[
-                          BoxShadow(
-                              offset: Offset(-1, 2),
-                              color: Colors.deepOrange,
-                              spreadRadius: 2,
-                              blurRadius: 8)
-                        ]
-                      : null,
-                  borderRadius: BorderRadius.circular(30),
-                  gradient: _buttonSelected == 1
-                      ? LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [Colors.redAccent, Colors.orange])
-                      : null,
-                ),
-                child: Center(
-                    child: Text("Global",
-                        style: _buttonSelected == 1
-                            ? selectedStyle
-                            : unselectedStyle)),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
 
   int _buttonSelected = 0;
 
@@ -380,7 +384,7 @@ class _ScanScreenState extends State<ScanScreen> {
               ),
             )),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: ListView(
 //                physics: ScrollPhysics(),
                 children: <Widget>[
@@ -429,7 +433,12 @@ class _ScanScreenState extends State<ScanScreen> {
                         );
                       }
                     },
-                  )
+                  ),
+                  ListView.builder(
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                      itemCount: 60,
+                      itemBuilder: (context, i) => Text(i.toString()))
                 ],
               ),
             )

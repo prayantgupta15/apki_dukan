@@ -1,0 +1,46 @@
+[
+  {
+    "category_name": "Essentials",
+    "stores": [
+      {
+        "store_name":"Ravi General Store",
+        "delivery":"true",
+        "open":"true"
+      },
+      {
+        "store_name":"Shanti Medicos",
+        "delivery":"true",
+        "open":"true"
+      }
+    ]
+  },  {
+    "category_name": "Essentials",
+    "stores": [
+      {
+        "store_name":"Ravi General Store",
+        "delivery":"true",
+        "open":"true"
+      },
+      {
+        "store_name":"Shanti Medicos",
+        "delivery":"true",
+        "open":"true"
+      }
+    ]
+  },
+  {
+    "category_name": "Fashion",
+    "stores": [
+      {
+        "store_name":"Ravi General Store",
+        "delivery":"true",
+        "open":"true"
+      },
+      {
+        "store_name":"Shanti Medicos",
+        "delivery":"true",
+        "open":"true"
+      }
+    ]
+  }
+]

@@ -27,7 +27,7 @@ List<Store> allStoresList = List<Store>();
 Future<List<Store>> getStores() async {
   print("getting store");
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  String str = prefs.getString('stores');
+  String str = prefs.getString('stores.json');
   allStoresList =
       List<Store>.from(json.decode(str).map((x) => Store.fromJson(x)));
   return allStoresList;
@@ -40,8 +40,8 @@ Future<bool> saveStoreDetails(String storeName, String storeURL) async {
   print(allStoresList.length.toString());
   String str =
       json.encode(List<dynamic>.from(allStoresList.map((x) => x.toJson())));
-  prefs.setString('stores', str);
-  print(prefs.getString('stores'));
+  prefs.setString('stores.json', str);
+  print(prefs.getString('stores.json'));
   return true;
 }
 

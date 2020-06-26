@@ -4,6 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
+import 'package:scanner/Models/storeModel.dart';
+import 'package:scanner/categoryShops.dart';
+import 'package:scanner/utils/rawData.dart';
 import 'package:scanner/utils/shared_preferences.dart';
 import 'package:scanner/utils/styles.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,91 +22,189 @@ class _ScanScreenState extends State<ScanScreen> {
   var _aspectTolerance = 0.00;
   var _selectedCamera = 0;
   var _autoEnableFlash = false;
-
+  int _buttonSelected = 0;
+  int button = 0;
   static final _possibleFormats = BarcodeFormat.values.toList()
     ..removeWhere((e) => e == BarcodeFormat.unknown);
   List<BarcodeFormat> selectedFormats = [..._possibleFormats];
 
-  Widget toggleButtons() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10),
-      width: MediaQuery.of(context).size.width * 0.8,
-      constraints: BoxConstraints(
-        maxHeight: 50,
-      ),
-      decoration: BoxDecoration(
-          color: searchBarColor, borderRadius: BorderRadius.circular(30)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              _buttonSelected = 0;
-              setState(() {});
-            },
-            child: Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width * 0.4,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  gradient: _buttonSelected == 0
-                      ? LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [Colors.redAccent, Colors.orange])
-                      : null,
-                  boxShadow: _buttonSelected == 0
-                      ? <BoxShadow>[
-                    BoxShadow(
-                        offset: Offset(1, 2),
-                        color: Colors.deepOrange,
-                        spreadRadius: 2,
-                        blurRadius: 8)
-                  ]
-                      : null),
-              child: Center(
-                  child: Text(
-                    "Local",
-                    style: _buttonSelected == 0 ? selectedStyle : unselectedStyle,
-                  )),
+  Widget searchBar() {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: MediaQuery.of(context).size.width * 0.7,
+          margin: EdgeInsets.symmetric(horizontal: 10),
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          constraints: BoxConstraints(
+            maxHeight: 50,
+          ),
+          decoration: BoxDecoration(color: searchBarColor, borderRadius: BR30),
+          child: Center(
+            child: TextField(
+              decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: hintText,
+                  hintStyle: searchBarHintTextStyle),
             ),
           ),
-          GestureDetector(
-            onTap: () {
-              _buttonSelected = 1;
-              setState(() {});
-            },
-            child: Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width * 0.42,
-              decoration: BoxDecoration(
-                boxShadow: _buttonSelected == 1
-                    ? <BoxShadow>[
-                  BoxShadow(
-                      offset: Offset(-1, 2),
-                      color: Colors.deepOrange,
-                      spreadRadius: 2,
-                      blurRadius: 8)
-                ]
-                    : null,
-                borderRadius: BorderRadius.circular(30),
-                gradient: _buttonSelected == 1
-                    ? LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [Colors.redAccent, Colors.orange])
-                    : null,
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.location_searching,
+            color: Colors.deepOrangeAccent,
+          ),
+          onPressed: () {},
+        )
+      ],
+    );
+  }
+
+  Widget toggleButtons() {
+    return Row(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 10),
+          constraints: BoxConstraints(
+            maxHeight: 50,
+          ),
+          decoration: BoxDecoration(color: searchBarColor, borderRadius: BR30),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  _buttonSelected = 0;
+                  setState(() {});
+                },
+                child: Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  decoration: BoxDecoration(
+                    borderRadius: BR30,
+                    gradient: _buttonSelected == 0 ? linearGradient : null,
+                    boxShadow:
+                        _buttonSelected == 0 ? <BoxShadow>[shadow] : null,
+                  ),
+                  child: Center(
+                      child: Text(
+                    "Local",
+                    style: _buttonSelected == 0
+                        ? toggleSelectedTextStyle
+                        : togelUnselectedTextStyle,
+                  )),
+                ),
               ),
-              child: Center(
-                  child: Text("Global",
-                      style: _buttonSelected == 1
-                          ? selectedStyle
-                          : unselectedStyle)),
+              GestureDetector(
+                onTap: () {
+                  _buttonSelected = 1;
+                  setState(() {});
+                },
+                child: Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  decoration: BoxDecoration(
+                    boxShadow:
+                        _buttonSelected == 1 ? <BoxShadow>[shadow] : null,
+                    borderRadius: BR30,
+                    gradient: _buttonSelected == 1 ? linearGradient : null,
+                  ),
+                  child: Center(
+                      child: Text("Global",
+                          style: _buttonSelected == 1
+                              ? toggleSelectedTextStyle
+                              : togelUnselectedTextStyle)),
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget FavNearby() {
+    return Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          GestureDetector(
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                "Favourites",
+                style: button == 0
+                    ? subTogalSelectedStyle
+                    : subTogalUnselectedStyle,
+              ),
             ),
-          )
+            onTap: () {
+              setState(() {
+                button = 0;
+              });
+              //TODO:SHOW FAVS
+            },
+          ),
+          Container(
+              height: 22, width: 2, color: Color(0x707070).withOpacity(1)),
+          GestureDetector(
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                "Nearby",
+                style: button == 1
+                    ? subTogalSelectedStyle
+                    : subTogalUnselectedStyle,
+              ),
+            ),
+            onTap: () {
+              button = 1;
+              setState(() {});
+              //TODO:SHOW FAVS
+            },
+          ),
+//        Divider(d),
         ],
       ),
+    );
+  }
+
+  Widget getSavedShops() {
+    return FutureBuilder(
+      future: getStores(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data.length > 0) {
+            return savedShopsGrid(snapshot);
+          } else {
+            return Column(
+              children: <Widget>[
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.4,
+                ),
+                Text(
+                  "No Shops Saved",
+                  style: TextStyle(
+                      color: Colors.grey, fontWeight: FontWeight.w500),
+                ),
+              ],
+            );
+          }
+        } else {
+          return Column(
+            children: <Widget>[
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.4,
+              ),
+              Text(
+                "No Shops Saved",
+                style:
+                    TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+              ),
+            ],
+          );
+        }
+      },
     );
   }
 
@@ -120,7 +221,7 @@ class _ScanScreenState extends State<ScanScreen> {
         children: List.generate(snapshot.data.length, (index) {
           return Card(
             shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             elevation: 8,
             child: GestureDetector(
               onTap: () async {
@@ -147,7 +248,7 @@ class _ScanScreenState extends State<ScanScreen> {
                       alignment: Alignment.bottomCenter,
                       child: Container(
                           padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           constraints: BoxConstraints(
                             minHeight: 30,
                           ),
@@ -170,7 +271,6 @@ class _ScanScreenState extends State<ScanScreen> {
       ),
     );
   }
-
 
   Future scan() async {
     try {
@@ -362,18 +462,11 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
-
-
-  int _buttonSelected = 0;
-
-  TextStyle selectedStyle =
-      TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16);
-  TextStyle unselectedStyle = TextStyle(
-      fontWeight: FontWeight.w500, color: Colors.black45, fontSize: 14);
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomPadding: false,
         body: Stack(
           children: <Widget>[
             Container(
@@ -384,61 +477,19 @@ class _ScanScreenState extends State<ScanScreen> {
               ),
             )),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
               child: ListView(
 //                physics: ScrollPhysics(),
                 children: <Widget>[
-                  SizedBox(height: 80),
+                  SizedBox(height: 30),
+                  searchBar(),
+                  SizedBox(height: 20),
                   toggleButtons(),
                   SizedBox(height: 20),
-                  Text("Saved Shops:",
-                      style: TextStyle(
-                          color: Colors.deepOrange,
-                          fontWeight: FontWeight.bold)),
-                  FutureBuilder(
-                    future: getStores(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data.length > 0) {
-                          return savedShopsGrid(snapshot);
-                        } else {
-                          return Column(
-                            children: <Widget>[
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.4,
-                              ),
-                              Text(
-                                "No Shops Saved",
-                                style: TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ],
-                          );
-                        }
-                      } else {
-                        return Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.4,
-                            ),
-                            Text(
-                              "No Shops Saved",
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        );
-                      }
-                    },
-                  ),
-                  ListView.builder(
-                      shrinkWrap: true,
-                      physics: ScrollPhysics(),
-                      itemCount: 60,
-                      itemBuilder: (context, i) => Text(i.toString()))
+                  FavNearby(),
+                  SizedBox(height: 20),
+//                  getSavedShops(),
+                  getShops(),
                 ],
               ),
             )
@@ -457,122 +508,29 @@ class _ScanScreenState extends State<ScanScreen> {
       ),
     );
   }
+
+  Widget getShops() {
+    return FutureBuilder(
+      future: getFuture(),
+      builder: (context, snapshot) {
+        //SNAPSHOT IS List<storeMode>
+        if (snapshot.hasData) {
+          if (snapshot.data.length == 0)
+            return Center(child: Text("Nothing to show"));
+          else {
+            return ListView.builder(
+                shrinkWrap: true,
+                physics: ScrollPhysics(),
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) {
+                  return categoryShops(snapshot.data[index]); // ONe StoreModel
+                });
+          }
+        } else
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+      },
+    );
+  }
 }
-
-//              SingleChildScrollView(
-//                child: Column(
-//                  children: <Widget>[
-//                    SizedBox(height: 80),
-//                    toggleButtons(),
-//                    SizedBox(height: 20),
-//                    Text("Saved Shops:",
-//                        style: TextStyle(
-//                            color: Colors.deepOrange,
-//                            fontWeight: FontWeight.bold)),
-//                    Container(
-//                      height: 200,
-//                      child: FutureBuilder(
-//                        future: getStores(),
-//                        builder: (context, snapshot) {
-//                          if (snapshot.hasData) {
-//                            if (snapshot.data.length > 0) {
-//                              return savedShopsGrid(snapshot);
-//                            } else {
-//                              return Column(
-//                                children: <Widget>[
-//                                  SizedBox(
-//                                    height: MediaQuery.of(context).size.height *
-//                                        0.4,
-//                                  ),
-//                                  Text(
-//                                    "No Shops Saved",
-//                                    style: TextStyle(
-//                                        color: Colors.grey,
-//                                        fontWeight: FontWeight.w500),
-//                                  ),
-//                                ],
-//                              );
-//                            }
-//                          } else {
-//                            return Column(
-//                              children: <Widget>[
-//                                SizedBox(
-//                                  height:
-//                                      MediaQuery.of(context).size.height * 0.4,
-//                                ),
-//                                Text(
-//                                  "No Shops Saved",
-//                                  style: TextStyle(
-//                                      color: Colors.grey,
-//                                      fontWeight: FontWeight.w500),
-//                                ),
-//                              ],
-//                            );
-//                          }
-//                        },
-//                      ),
-//                    )
-//                  ],
-//                ),
-//              ),
-
-//                CustomScrollView(
-//                  slivers: <Widget>[
-//                    SliverList(
-//                      delegate: SliverChildListDelegate([
-//                        SizedBox(height: 80),
-//                        toggleButtons(),
-//                        SizedBox(height: 20),
-//                        Text("Saved Shops:",
-//                            style: TextStyle(
-//                                color: Colors.deepOrange,
-//                                fontWeight: FontWeight.bold)),
-//                      ]),
-//                    ),
-//                    SliverList(
-//                      delegate: SliverChildListDelegate([
-//                        FutureBuilder(
-//                          future: getStores(),
-//                          builder: (context, snapshot) {
-//                            if (snapshot.hasData) {
-//                              if (snapshot.data.length > 0) {
-//                                return savedShopsGrid(snapshot);
-//                              } else {
-//                                return Column(
-//                                  children: <Widget>[
-//                                    SizedBox(
-//                                      height:
-//                                          MediaQuery.of(context).size.height *
-//                                              0.4,
-//                                    ),
-//                                    Text(
-//                                      "No Shops Saved",
-//                                      style: TextStyle(
-//                                          color: Colors.grey,
-//                                          fontWeight: FontWeight.w500),
-//                                    ),
-//                                  ],
-//                                );
-//                              }
-//                            } else {
-//                              return Column(
-//                                children: <Widget>[
-//                                  SizedBox(
-//                                    height: MediaQuery.of(context).size.height *
-//                                        0.4,
-//                                  ),
-//                                  Text(
-//                                    "No Shops Saved",
-//                                    style: TextStyle(
-//                                        color: Colors.grey,
-//                                        fontWeight: FontWeight.w500),
-//                                  ),
-//                                ],
-//                              );
-//                            }
-//                          },
-//                        )
-//                      ]),
-//                    )
-//                  ],
-//                ))
